@@ -65,7 +65,7 @@ to this you won't have to change as many config files.
 export STOQS_HOME=/opt/stoqsgit
 cd `dirname $STOQS_HOME`
 git clone https://github.com/stoqs/stoqs.git stoqsgit
-~~
+~~~
 
 Provision the server. This is usually done with provision.sh, 
 which is intended for the Vagrant environment, but works well 
@@ -90,7 +90,7 @@ install the uwsgi proxy specific modules in Apache http:
 
 ~~~
 yum install mod_proxy mod_proxy_uwsgi 
-~~~~
+~~~
 
 On Redhat or CentOS releases this downloads and installs the apache modules to 
 /etc/httpd/modules. On RHEL, you should have an /etc/httpd/conf.modules.d directory,
