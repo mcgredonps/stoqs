@@ -41,9 +41,12 @@ then
     echo 0 > /selinux/enforce
 
     echo Add epel, remi, and postgres repositories
+    # The epel release occasionally gets out of date, and must be updated,
+    # typically from something like "epel-release-7-7.noarch.rpm"
+    # to "epel-release-7-8.noarch.rpm".
     yum makecache fast
     yum -y install wget git
-    wget -q -N http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-7.noarch.rpm
+    wget -q -N http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
     if [ $? -ne 0 ] ; then
         echo "File not found. Check http://dl.fedoraproject.org/pub/epel/7/x86_64/e/ for current version."
         exit 1
