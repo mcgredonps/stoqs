@@ -1,6 +1,6 @@
-## Using Apache in a Production Environment
+# Using Apache in a Production Environment
 
-# Introduction
+## Introduction
 
 STOQS is set up with a front end web server acting as a proxy
 for an UWSGI environment running a Django application. Many web
@@ -19,11 +19,19 @@ through the firewall can range in difficulty from "hard" all the way to
 "impossible without someone holding a pistol to the head of the 
 enterprise."
 
-# Background and Theory
+## Background and Theory
 
 Web servers often act as proxies for services running somewhere 
-safer than the open internet. In the case of nginx, this is
-done in the config file with this piece of configuration:
+safer than the open internet. The web server accepts the request,
+then turns around and hands it off to service. The service responds,
+and the response is relayed back to the client by the web server. 
+There are a variety of protocols and media that can be used to proxy the
+request. HTTP is popular, and jk_mod is popualr in the web application
+world. Many use conventional internet sockets to transmit the data,
+and some use Unix domain sockets or other media.
+
+In the case of nginx, configuring how this is done is 
+in the config file with this piece of configuration:
 
 ~~~
 # the upstream component nginx needs to connect to
@@ -46,7 +54,7 @@ request. You can choose to have Apache not handle specific directories,
 such as http://hostname/media, if you like. The syntax here is specific 
 to nginx, but the same thing happens in Apache. 
 
-# Apache
+## Apache
 
 This is lifted in part from http://uwsgi-docs.readthedocs.io/en/latest/Apache.html.
 
@@ -78,7 +86,7 @@ This assumes that the uwsgi application (and the django application)
 are listening on localhost port 2000, using the HTTP protocol. See the
 configuration file for stoqs_uwsgi.ini.
 
-# Configure stoqs_uwsgi.ini 
+## Configure stoqs_uwsgi.ini 
 
 The configuration file used to uwsgi to start the django/stoqs application
 should specify an HTTP port that matches what is used in the Apache
