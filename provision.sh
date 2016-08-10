@@ -58,6 +58,8 @@ then
     echo Install Python 2.7 and its support tools pip and virtalenv
     yum groupinstall -y development
     yum install -y zlib-devel openssl-devel sqlite-devel bzip2-devel xz-libs firefox
+    echo install uwsgi proxy for apache httpd
+    yum install -y uwsgi mod_proxy_uwsgi
     wget -q -N http://www.python.org/ftp/python/2.7.9/Python-2.7.9.tar.xz
     xz -d -c Python-2.7.9.tar.xz | tar -xvf -
     cd Python-2.7.9
