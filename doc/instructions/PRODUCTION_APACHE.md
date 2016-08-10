@@ -25,18 +25,19 @@ Web servers often act as proxies for services running somewhere
 safer than the open internet. In the case of nginx, this is
 done in the config file with this piece of configuration:
 
-># the upstream component nginx needs to connect to
->upstream django {
->    server unix:///opt/stoqsgit/stoqs/stoqs.sock;       # a file socket has less overhead
->    #server 127.0.0.1:8001;                             # a web port socket
->}
-> ....
-> # Finally, send all non-media requests to the Django server.
->    location / {
->        uwsgi_pass  django;
->        include     /opt/stoqsgit/stoqs/uwsgi_params; # the uwsgi_params file you installed
->    }
-
+~~~
+# the upstream component nginx needs to connect to
+upstream django {
+    server unix:///opt/stoqsgit/stoqs/stoqs.sock;       # a file socket has less overhead
+    #server 127.0.0.1:8001;                             # a web port socket
+}
+ ....
+ # Finally, send all non-media requests to the Django server.
+    location / {
+        uwsgi_pass  django;
+        include     /opt/stoqsgit/stoqs/uwsgi_params; # the uwsgi_params file you installed
+    }
+~~~~
 
 This specifies a service running on localhost (127.0.0.1) listening on 
 a Unix domain socket. When a request to the root comes in at
@@ -68,9 +69,10 @@ In addition we need to tell Apache to forward requests to the uwsgi/Django
 process running on the host. 
 
 Add these lines to the httpd.conf file:
-
+~~~~
 ProxyPass / http://127.0.0.1:2000
 ProxyPassReverse / 127.0.0.1:2000
+~~~~
 
 This assumes that the uwsgi application (and the django application) 
 are listening on localhost port 2000, using the HTTP protocol. See the
@@ -82,17 +84,19 @@ The configuration file used to uwsgi to start the django/stoqs application
 should specify an HTTP port that matches what is used in the Apache
 ProxyPass statement above.
 
-># stoqs_uwsgi.ini file
->[uwsgi]
->...
-># For apache, use the http port. Older versions of the
-># apache/uswgi module don't support unix sockets.
-># See http://uwsgi-docs.readthedocs.io/en/latest/Configuration.html
-># and
-># http://uwsgi-docs.readthedocs.io/en/latest/Apache.html
->#
-># I am attempting to use the mod_proxy_uwsgi method.
->http-socket = 127.0.0.1:2000
+~~~
+# stoqs_uwsgi.ini file
+[uwsgi]
+...
+# For apache, use the http port. Older versions of the
+# apache/uswgi module don't support unix sockets.
+# See http://uwsgi-docs.readthedocs.io/en/latest/Configuration.html
+# and
+# http://uwsgi-docs.readthedocs.io/en/latest/Apache.html
+
+# I am attempting to use the mod_proxy_uwsgi method.
+http-socket = 127.0.0.1:2000
+~~~~
 
 You should have "socket = /opt/stoqsgit/stoqs/stoqs.sock"
 commented out. This specifies an alternative method of 
