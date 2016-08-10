@@ -107,9 +107,10 @@ In addition we need to tell Apache to forward requests to the uwsgi/Django
 process running on the host. 
 
 Add these lines to the httpd.conf file:
+
 ~~~~
 ProxyPass / http://127.0.0.1:2000
-ProxyPassReverse / 127.0.0.1:2000
+ProxyPassReverse / http://127.0.0.1:2000
 ~~~~
 
 This assumes that the uwsgi application (and the django application) 
