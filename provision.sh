@@ -2,6 +2,10 @@
 # Idempotent shell script to install system level prerequisites for STOQS.
 # Designed to be run from Vagrantfile, where default USER is vagrant.
 # Usage: provision.sh centos7 vagrant (default)
+
+# Where to do a git checkout from
+export GIT_REPO_URL=$GIT_REPO_URL
+
 if [ "$EUID" -ne 0 ]
 then echo "Please run as root"
     exit 1
@@ -217,10 +221,10 @@ cat <<EOT > .vimrc
 :set shiftwidth=4
 EOT
 
-echo Cloning STOQS repo from https://github.com/stoqs/stoqs.git... 
+echo Cloning STOQS repo from $GIT_REPO_URL
 echo "(See CONTRIBUTING.md for how to clone from your fork so that you can share your contributions.)"
 mkdir dev && cd dev
-git clone https://github.com/stoqs/stoqs.git stoqsgit
+git clone $GIT_REPO_URL stoqsgit
 cd stoqsgit
 export PATH="/usr/local/bin:$PATH"
 virtualenv venv-stoqs
