@@ -2,18 +2,17 @@
 
 ## Introduction
 
-STOQS is set up with a front end web server acting as a "proxy"
+STOQS with nginx is set up with a front end web server acting as a "proxy"
 for an UWSGI environment running a Django application. A proxy forwards
 incoming requests to another service, either running on the same host
 or another host. This can be a flexible approach, and it's often possible
 for the front end web server to act as a load balancer for multiple
-service instances running elsewhere. Many web
-servers can do this task. Historically in STOQS this has been done by 
-the nginx web server, a fast and scalable web server. This document documents
-using Apache instead. 
+service instances running elsewhere. Many web servers can do this task. 
+Historically STOQS has used the fast and scalable nginx web server to
+do this. This document explains how to use Apache instead. 
 
 This has some benefits. STOQS needs a map server, and that map server
-must run on Apache; the mapserv appliction is placed in cgi-bin of the
+must run on Apache; the mapserv application is placed in cgi-bin of the
 apache server. If you're running STOQS on a single server, this means
 you wind up running both Apache and nginx. Since only one can
 listen on port 80/443, this often means Apache must run on a non-standard
@@ -21,18 +20,40 @@ port that is accessible from the client, outside the hosting organization's
 enterprise firewall. Getting a non-standard port, such as 8000, open
 through the firewall can range in difficulty from "hard" all the way to
 "impossible without someone holding a pistol to the head of the 
-enterprise CEO."
+enterprise CEO." 
 
 ## Background and Theory
 
-Web servers often act as proxies for services running somewhere 
-safer than the open internet. The web server accepts the request,
-then turns around and hands it off to service. The service responds,
-and the response is relayed back to the client by the web server. 
-There are a variety of protocols and media that can be used to proxy the
-request. HTTP is popular, and jk_mod is popular in the web application
-server world. Many use conventional internet sockets to transmit the data,
-and some use Unix domain sockets or other media.
+There are two types of proxies: forward proxies and reverse proxies.
+For a discussion of the difference between them, see
+[reverse proxies in django](https://design.canonical.com/2015/08/django-behind-a-proxy-fixing-absolute-urls/).
+Basically, a forward proxy acts on behalf of the client in contacting
+a server much like a NAT server. The forward proxy contacts the service
+on behalf of the client, and the server sees the request as coming from
+the proxy rather than the client. The client sees the end service. A 
+reverse proxy also contacts the service on behalf of the client, but the 
+client sees the response as returning from the proxy.
+
+For example: a web application is running on an internal server
+at internal.example.com:8080. There's a reverse proxy running at 
+public.example.com:80, and a client at desktop.client.com. 
+Public.example.com is a web server configured to act as a reverse
+proxy, and requests coming in to http://public.example.com/foo are
+forwarded to http://internal.example.com:8080/bar.
+
+Desktop.client.com contacts http://public.example.com/foo, and the web server
+running there forwards the request to http://internal.example.com:8080/bar, along 
+with some headers in the request added by the web server. The service
+at internal.example.com processes the request (making use of the headers
+in the request if necessary) and returns a response to public.example.com.
+Public.example.com returns the request to desktop.client.com, and desktop.client.com
+is none the wiser about who actually handled the request. As far as it's
+concerned, public.example.com did everything.
+
+This is done for a variety of reasons. The reverse proxy can act as load
+balancer for several services running in the background, for example. 
+Or https can be terminated at the reverse proxy and unencrypted data
+passed on the relatively secure internal network. 
 
 In the case of nginx, configuring how this is done is 
 in the config file with this piece of configuration:
@@ -54,16 +75,13 @@ upstream django {
 This specifies a service running on localhost (127.0.0.1) listening on 
 a Unix domain socket. When a request to the root comes in at
 "/", it's passed off to the "django" upstream service, which handles the
-request. You can choose to have Apache not handle specific directories,
-such as http://hostname/media, if you like. The syntax here is specific 
-to nginx, but the same thing happens in Apache. 
+request. The syntax here is specific  to nginx, but the same thing happens in Apache. 
 
 ## STOQS configuration
 
-STOQS is configured in essentially the same way as the nginx production
-configuration document.
-
-
+The STOQS application is configured in essentially the same way as the nginx production
+configuration document. STOQS needs to be running as a service so the Apache
+web server can proxy to it.
 
 I recommend you provision the server using the Vagrant provision.sh
 script. This installs the assorted packages needed by STOQS.
@@ -71,9 +89,7 @@ script. This installs the assorted packages needed by STOQS.
 ./provision.sh
 ~~~
 
-Afterwards 
-
-Clone STOQS to a directory. The default is /opt/stoqsgit. If you stick
+Afterwards, clone STOQS to a directory. The default is /opt/stoqsgit. If you stick
 to this you won't have to change as many config files. If you get the
 STOQS repository from a different location, for example your own forked
 copy of STOQS on github, you'll have to change that location below.
@@ -84,8 +100,8 @@ git clone https://github.com/stoqs/stoqs.git stoqsgit
 ~~~
 
 Set up a virtual enviroment in which the Python/Django application can run.
-virtualenv creates a virtual environment in which the Django/stoqs
-application will run. "setup.sh production" installs the various
+virtualenv creates a virtual environment for the Django/stoqs
+application. "setup.sh production" installs the various
 Python modules needed for the application to run.
 
 ~~~
@@ -102,14 +118,15 @@ On RHEL/CentOS, the default apache content directories are
 in /var/www/html. The "stoqs/manage.py collectstatic" command
 extracts static web content from the django application and places it
 in the directories created. The Apache web server can then serve these
-files directly, which is generally faster.
+files directly, rather than going to the back end service. This is generally 
+faster; Apache is really good at serving static content.
 
 ~~~
 sudo mkdir /var/www/html/media
 sudo mkdir /var/www/html/static
 sudo chown $USER /var/www/html/static
 export STATIC_ROOT=/var/www/html/static
-export DATABASE_URL="postgis://<dbuser>:<pw>@<host>:<port>/stoqs"
+export DATABASE_URL="postgis://stoqsadm:CHANGEME@127.0.0.1:5432/stoqs"
 stoqs/manage.py collectstatic
 ~~~
 
@@ -135,7 +152,7 @@ file needs to match up with the parameters in this file.
 The configuration file used to uwsgi to start the django/stoqs application
 should specify an HTTP port that matches what is used in the Apache
 ProxyPass statement below. In this case it's using the HTTP protocol
-on port 2000. Apache will forward requests to uswgi at that address,
+on port 4500. Apache will forward requests to uswgi at that address,
 where it expects uwsgi to be listening. The example uwsgi configuration
 file is stoqs_uwsgi_apache.ini in the stoqs application directory. The
 relevant changes to it, compared to the nginx configuration file, are
@@ -190,7 +207,7 @@ Apache web server will proxy.
 export STOQS_HOME=/opt/stoqsgit
 export STATIC_ROOT=/var/www/html/static
 export MEDIA_ROOT=/var/www/html/media
-export DATABASE_URL="postgis://<dbuser>:<pw>@<host>:<port>/stoqs"
+export DATABASE_URL="postgis://stoqsadm:CHANGEME@127.0.0.1:5432/stoqs"
 export MAPSERVER_HOST="<mapserver_ip_address>"
 export SECRET_KEY="<random_sequence_of_impossible_to_guess_characters>"
 export GDAL_DATA=/usr/share/gdal
@@ -230,18 +247,22 @@ Add these lines to the httpd.conf file:
 
 ~~~
 # The order is important here. The lines that end in "!"
-# mean "do not send this URL to the upstream proxy; instead
+# mean "do not send this URL to the service being proxied; instead
 # serve this directory from the web server's document area."
-# In this case, apahce serves content from /static and /media,
-# but passes the rest to Django.
+# In this case, apache serves content from /static and /media,
+# but passes the rest to the Django service.
 ProxyPass /static !
 ProxyPass /media !
 ProxyPass / http://127.0.0.1:4500
+ProxyPassReverse / http://127.0.0.1:4500
 ~~~
 
 This assumes that the uwsgi application (and the django application)
-are listening on localhost port 2000, using the HTTP protocol. See the
-configuration file for stoqs_uwsgi.ini.
+are listening on localhost port 4500, using the HTTP protocol. See the
+configuration file for stoqs_uwsgi.ini. The ProxyPassReverse should
+put some new headers in the HTTP request: X-Forwarded-For, 
+X-Forwarded-Host,  X-Forwarded-Server. The Django application can
+extract these headers when creating a response.
 
 Restart apache:
 
