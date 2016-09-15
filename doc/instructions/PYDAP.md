@@ -56,7 +56,7 @@ paster create -t pydap server
 import site
 site.addsitedir('/var/www/pydap/env/lib/python2.7/site-packages')
 
-# The whole file will look like this. There may be differences for 
+# The whole file pydap.wsgi will look like this. There may be differences for 
 # the paths and python version number. This specifies the directory
 # in which pip placed the supporting python files.
 
