@@ -39,7 +39,7 @@ cd /var/www/pydap
 paster create -t pydap server
 
 # The server.ini file created in the server directory looks like this:
-#server:main]
+#[server:main]
 #use = egg:Paste#http
 ## Change to 0.0.0.0 to make public
 #host = 127.0.0.1
@@ -50,15 +50,6 @@ paster create -t pydap server
 #root = %(here)s/data
 #templates = %(here)s/templates
 #x-wsgiorg.throw_errors = 0
-
-
-# Next, assure that the mod_wsgi module is installed. Note that this is
-# different from the mod_proxy_uwsgi module, which is more modern but
-# with which I have had endless problems.  mod_wsgi is an apache
-# module that provides a wsgi interface for hosting wsgi-compliant
-# python applications. On CentOS 7 it can be installed from yum
-
-yum install mod_wsgi
 
 # Edit /var/www/pydap/server/apache/pydap.wsgi  to add these two lines at the very top:
 
@@ -77,6 +68,14 @@ from paste.deploy import loadapp
 
 config = os.path.join(os.path.dirname(__file__), '../server.ini')
 application = loadapp('config:%s' % config)
+
+# Next, assure that the apache mod_wsgi module is installed. Note that this is
+# different from the mod_proxy_uwsgi module, which is more modern but
+# with which I have had endless problems.  mod_wsgi is an apache
+# module that provides a wsgi interface for hosting wsgi-compliant
+# python applications. On CentOS 7 it can be installed from yum
+
+yum install mod_wsgi
 
 # Next, edit the /etc/httpd/conf/httpd.conf file to add this. The
 # path to the pydap.wsgi file is the entry point for the script, 
