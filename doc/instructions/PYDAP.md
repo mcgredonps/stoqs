@@ -10,6 +10,7 @@ Assuming a standard apache install, with the standard HTML content
 in /var/www/html and the configuration file in /etc/httpd/conf, installing
 it goes something like this:
 
+```bash
 # Create a pydap directory outside the standard content directory.
 # The virualenv.py file creates a virtual environment directory with the 
 # necessary python supporting packages. Pip will place the supporting
@@ -62,4 +63,4 @@ WSGIScriptAlias /pydap /var/www/pydap/server/apache/pydap.wsgi
 </Directory>
 
 # This specifies a script to run when someone hits the /pydap URL.
- 
+```
