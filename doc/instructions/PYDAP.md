@@ -1,10 +1,13 @@
 ## PyDap
 
-PyDap is a system for serving up netcdf files remotely.
+PyDap is a system for serving up netcdf files remotely in 
+accordance with the OPenDAP Data Access Protocol. See [https://www.opendap.org]
+for more information on OPenDAP. The PyDap site is at
+[http://www.pydap.org].
 
 Instructions for installing PyDap with Apache are here:
 
-http://www.pydap.org/server.html#running-pydap-with-apache
+[http://www.pydap.org/server.html#running-pydap-with-apache]
 
 Assuming a standard apache install, with the standard HTML content
 in /var/www/html and the configuration file in /etc/httpd/conf, installing
@@ -19,12 +22,13 @@ it goes something like this:
 mkdir /var/www/pydap
 python /usr/local/lib/python2.7/site-packages/virtualenv.py /var/www/pydap/env
 
-# Create the virtual environment with system site packages
+# Alternatively create the virtual environment with system site packages
 #python virtualenv.py --system-site-packages /var/www/pydap/env
 
 # Source the file necessary to set the environment variables, and
 # then use pip to install various packages into the sandbox/isolated
-# python environment in the env directory 
+# python environment in the env directory, including Pydap, the python-based
+# OpenDap server for NetCDF files.
 source /var/www/pydap/env/bin/activate
 pip install Pydap
 
