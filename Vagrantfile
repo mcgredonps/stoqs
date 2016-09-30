@@ -10,6 +10,7 @@ Vagrant.configure("2") do |config|
   end
   config.vm.box = "puppetlabs/centos-7.0-64-puppet"
   config.ssh.forward_agent = true
+  config.ssh.insert_key = false
   config.vm.network :forwarded_port, host: 8000, guest: 8000
   config.vm.network :forwarded_port, host: 8080, guest: 80
   config.ssh.forward_x11 = true
