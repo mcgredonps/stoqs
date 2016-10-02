@@ -57,7 +57,7 @@ then
     fi
     wget -q -N http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
     rpm -Uvh remi-release-7*.rpm epel-release-7*.rpm
-    curl -sS -O http://yum.postgresql.org/9.4/redhat/rhel-7-x86_64/pgdg-centos94-9.4-1.noarch.rpm > /dev/null
+    curl -L -sS -O http://yum.postgresql.org/9.4/redhat/rhel-7-x86_64/pgdg-centos94-9.4-1.noarch.rpm > /dev/null
     rpm -ivh pgdg*
     yum -y install postgresql94-server
     yum -y groupinstall "PostgreSQL Database Server 9.4 PGDG"
@@ -78,7 +78,7 @@ then
     cd setuptools-1.4.2
     /usr/local/bin/python2.7 setup.py install
     cd ..
-    curl -sS https://bootstrap.pypa.io/get-pip.py | sudo /usr/local/bin/python2.7 - > /dev/null
+    curl -L -sS https://bootstrap.pypa.io/get-pip.py | sudo /usr/local/bin/python2.7 - > /dev/null
     /usr/local/bin/pip install virtualenv
 
     yum -y install rabbitmq-server scipy mod_wsgi memcached python-memcached
