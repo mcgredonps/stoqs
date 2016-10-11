@@ -123,7 +123,7 @@ the stoqs application, e.g. an account something like USER='stoqsadm'.
         sudo ln -s $STOQS_HOME/stoqs/stoqs_uwsgi.ini /etc/uwsgi/vassals
         # To get a new logo on the home page
         export HOME_PAGE_LINK="http://robodata.nps.edu"
-        export HOME_PAGE_LOGO=JifxRobodataLogo.png
+        export HOME_PAGE_LOGO=JifxRobodataLogo24.png
         export HOME_PAGE_ALT='robodata home'
         /usr/local/bin/uwsgi --emperor /etc/uwsgi/vassals --uid www-data --gid www-data
 
