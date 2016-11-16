@@ -2,6 +2,10 @@
 # Idempotent shell script to install system level prerequisites for STOQS.
 # Designed to be run from Vagrantfile, where default USER is vagrant.
 # Usage: provision.sh centos7 vagrant (default)
+
+# Where to do a git checkout from
+export GIT_REPO_URL=$GIT_REPO_URL
+
 if [ "$EUID" -ne 0 ]
 then echo "Please run as root"
     exit 1
@@ -41,16 +45,19 @@ then
     echo 0 > /selinux/enforce
 
     echo Add epel, remi, and postgres repositories
+    # The epel release occasionally gets out of date, and must be updated,
+    # typically from something like "epel-release-7-7.noarch.rpm"
+    # to "epel-release-7-8.noarch.rpm".
     yum makecache fast
     yum -y install wget git
-    wget -q -N http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-7.noarch.rpm
+    wget -q -N http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
     if [ $? -ne 0 ] ; then
         echo "File not found. Check http://dl.fedoraproject.org/pub/epel/7/x86_64/e/ for current version."
         exit 1
     fi
     wget -q -N http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
     rpm -Uvh remi-release-7*.rpm epel-release-7*.rpm
-    curl -sS -O http://yum.postgresql.org/9.4/redhat/rhel-7-x86_64/pgdg-centos94-9.4-1.noarch.rpm > /dev/null
+    curl -L -sS -O http://yum.postgresql.org/9.4/redhat/rhel-7-x86_64/pgdg-centos94-9.4-1.noarch.rpm > /dev/null
     rpm -ivh pgdg*
     yum -y install postgresql94-server
     yum -y groupinstall "PostgreSQL Database Server 9.4 PGDG"
@@ -58,6 +65,8 @@ then
     echo Install Python 2.7 and its support tools pip and virtalenv
     yum groupinstall -y development
     yum install -y zlib-devel openssl-devel sqlite-devel bzip2-devel xz-libs firefox
+    echo install uwsgi proxy for apache httpd
+    yum install -y uwsgi mod_proxy_uwsgi
     wget -q -N http://www.python.org/ftp/python/2.7.9/Python-2.7.9.tar.xz
     xz -d -c Python-2.7.9.tar.xz | tar -xvf -
     cd Python-2.7.9
@@ -69,7 +78,7 @@ then
     cd setuptools-1.4.2
     /usr/local/bin/python2.7 setup.py install
     cd ..
-    curl -sS https://bootstrap.pypa.io/get-pip.py | sudo /usr/local/bin/python2.7 - > /dev/null
+    curl -L -sS https://bootstrap.pypa.io/get-pip.py | sudo /usr/local/bin/python2.7 - > /dev/null
     /usr/local/bin/pip install virtualenv
 
     yum -y install rabbitmq-server scipy mod_wsgi memcached python-memcached
@@ -212,10 +221,10 @@ cat <<EOT > .vimrc
 :set shiftwidth=4
 EOT
 
-echo Cloning STOQS repo from https://github.com/stoqs/stoqs.git... 
+echo Cloning STOQS repo from $GIT_REPO_URL
 echo "(See CONTRIBUTING.md for how to clone from your fork so that you can share your contributions.)"
 mkdir dev && cd dev
-git clone https://github.com/stoqs/stoqs.git stoqsgit
+git clone $GIT_REPO_URL stoqsgit
 cd stoqsgit
 export PATH="/usr/local/bin:$PATH"
 virtualenv venv-stoqs
