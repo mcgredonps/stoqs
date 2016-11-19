@@ -8,11 +8,11 @@ Vagrant.configure("2") do |config|
     v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
     v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
   end
-    config.vm.box = "centos/7"
-    config.ssh.forward_agent = true
-    config.ssh.insert_key = false
-    config.vm.network :forwarded_port, host: 8000, guest: 8000
-    config.vm.network :forwarded_port, host: 8080, guest: 80
-    config.ssh.forward_x11 = true
-    config.vm.provision "shell", path: "provision.sh"
+  config.vm.box = "centos/7"
+  config.ssh.forward_agent = true
+  config.ssh.insert_key = false
+  config.vm.network :forwarded_port, host: 8000, guest: 8000
+  config.vm.network :forwarded_port, host: 8080, guest: 80
+  config.ssh.forward_x11 = true
+  config.vm.provision "shell", path: "provision.sh"
 end
