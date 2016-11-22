@@ -4,7 +4,8 @@
 # Usage: provision.sh centos7 vagrant (default)
 
 # Where to do a git checkout from
-export GIT_REPO_URL=$GIT_REPO_URL
+#export GIT_REPO_URL=$GIT_REPO_URL
+export GIT_REPO_URL=https://github.com/mcgredonps/stoqs.git
 
 if [ "$EUID" -ne 0 ]
 then echo "Please run as root"
