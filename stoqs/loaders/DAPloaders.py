@@ -206,6 +206,7 @@ class Base_Loader(STOQS_Loader):
                 logger.debug('Getting trajectory min and max times for v = %s', v)
                 logger.debug("self.ds[ac['time']][0] = %s", self.ds[ac['time']][0])
                 try:
+                    # import pdb; pdb.set_trace();
                     minDT[v] = from_udunits(self.ds[ac['time']][0][0], self.ds[ac['time']].attributes['units'])
                     maxDT[v] = from_udunits(self.ds[ac['time']][-1][0], self.ds[ac['time']].attributes['units'])
                 except ParserError as e:

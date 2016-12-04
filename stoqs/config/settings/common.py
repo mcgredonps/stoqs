@@ -328,7 +328,7 @@ LOGGING['loggers']['loaders'] = {
 LOGGING['loggers']['DAPloaders'] = {
                             'handlers':['console'],
                             'propagate': True,
-                            'level':'INFO',
+                            'level':'DEBUG',
                             'formatter': 'verbose'
 }
 LOGGING['loggers']['SampleLoaders'] = {

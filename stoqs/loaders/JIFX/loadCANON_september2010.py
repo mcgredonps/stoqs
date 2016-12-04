@@ -13,8 +13,9 @@ MBARI 22 April 2012
 
 import os
 import sys
-# Imports __init.py__ with canon loader from CANON dir
-parentDir = os.path.join(os.path.dirname(__file__), "../CANON")
+# Imports __init.py__ with canon loader from CANON dir. CANON is the
+# package we're looking for, so we need the directory that holds CANON.
+parentDir = os.path.join(os.path.dirname(__file__), "../")
 sys.path.insert(0, parentDir)  # So that CANON is found
 from CANON import CANONLoader
 
