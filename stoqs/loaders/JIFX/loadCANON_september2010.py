@@ -17,7 +17,7 @@ import sys
 # package we're looking for, so we need the directory that holds CANON.
 parentDir = os.path.join(os.path.dirname(__file__), "../")
 sys.path.insert(0, parentDir)  # So that CANON is found
-from CANON import CANONLoader
+from JIFX import ARDULoader
 
 # Assign input data sources
 # First arg is database name in psql. should be lower case. 
@@ -25,7 +25,7 @@ from CANON import CANONLoader
 # Second is name
 # Third is description
 # 3d terrains is for camp roberts
-cl = CANONLoader('jifx_aug_2016', 'JIFX--August 2016 ',
+cl = ARDULoader('jifx_aug_2016', 'JIFX--August 2016 ',
                     description = 'Swarming UAV at JIFX',
                     x3dTerrains = {
                         'http://dods.mbari.org/terrain/x3d/Monterey25_10x/Monterey25_10x_scene.x3d': {
@@ -47,7 +47,7 @@ cl.dorado_files = [ 'trajectory.nc',
 
 # Include variables that will show up in the plots in stoqs. Do 
 # not included should be coordinate variables.
-cl.dorado_parms = [ 'GPS_NSats', 'GPS_Spd', 
+cl.dorado_parms = [ 'GPS_NSats', 'GPS_Spd', 'GPS_GMS,GPS_GWk', 'GPS_TimeUS'
                   ]
 
 # Execute the load 
@@ -56,18 +56,19 @@ cl.process_command_line()
 # for very large data sets you can pick up only every N
 # records. If test only load every 100. 
 if cl.args.test:
-    cl.loadDorado(stride=100)
+    cl.loadARDU(stride=100)
 
 # Stride for production if the data is higher freq than you need
 elif cl.args.optimal_stride:
-    cl.loadDorado(stride=2)
+    cl.loadARDU(stride=2)
 
 # Passed in on the command line. Default is 1, set in __init.py__
 else:
-    cl.loadDorado(stride=cl.args.stride)
+    cl.loadARDU(stride=cl.args.stride)
 
 # Add any X3D Terrain information specified in the constructor to the database - must be done after a load is executed
-cl.addTerrainResources()
+# Commented out--DMcG
+#cl.addTerrainResources()
 
 print "All Done."
 
