@@ -55,8 +55,8 @@ The [stoqs-discuss](https://groups.google.com/forum/#!forum/stoqs-discuss) list 
 a good place to ask questions and engage in discussion with the STOQS user and developer communities.
 
 Supported by the David and Lucile Packard Foundation, STOQS undergoes continual development
-to help support the mission of the Monterey Bay Aquarium Research Institue.  If you have your
-own server you will occaisionally want to get new features with:
+to help support the mission of the Monterey Bay Aquarium Research Institute (MBARI).  If you have your
+own server you will occasionally want to get new features with:
 
     git pull
     ./setup.sh
