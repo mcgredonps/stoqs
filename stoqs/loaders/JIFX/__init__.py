@@ -117,11 +117,11 @@ class ARDULoader(LoadScript):
         '''
         pName = 'ardu'
         stride = stride or self.stride
-        for (aName, f) in zip([ a + getStrideText(stride) for a in self.dorado_files], self.dorado_files):
-            url = self.dorado_base + f
+        for (aName, f) in zip([ a + getStrideText(stride) for a in self.ardu_files], self.ardu_files):
+            url = self.ardu_base + f
             DAPloaders.runGliderLoader(url, self.campaignName, self.campaignDescription, aName, 
                                        pName, self.colors['ardu'], 'uav', 'Swarming UAV mission', 
-                                       self.dorado_parms, self.dbAlias, stride, grdTerrain=self.grdTerrain)
+                                       self.ardu_parms, self.dbAlias, stride, grdTerrain=self.grdTerrain)
 
         # x3d model for drone (must be on public web server)
         #self.addPlatformResources('http://stoqs.mbari.org/x3d/dorado/simpleDorado389.x3d', pName,

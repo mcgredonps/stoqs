@@ -12,3 +12,7 @@ yum install udunits2
 
 Python debugger
 import pdb; pdb.set_trace();
+
+JIFX campaign link:
+
+campaigns.py -> jifx_campaigns.py

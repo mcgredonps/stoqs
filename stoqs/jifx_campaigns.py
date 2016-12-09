@@ -14,5 +14,5 @@ from collections import OrderedDict
 
 # Name must match loader name in jifx directory
 campaigns = OrderedDict([
-    ('jifx_aug_2016',   'JIFX/loadCANON_september2010.py'),
+    ('jifx_dec_2015',   'JIFX/loadARDU.py'),
 ])
